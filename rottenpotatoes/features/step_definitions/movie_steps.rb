@@ -2,10 +2,10 @@
 
 Given /the following movies exist/ do |movies_table|
   movies_table.hashes.each do |movie|
+    Movie.create!(movie)
     # each returned element will be a hash whose key is the table header.
     # you should arrange to add that movie to the database here.
   end
-  fail "Unimplemented"
 end
 
 # Make sure that one string (regexp) occurs before or after another one
@@ -13,8 +13,10 @@ end
 
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
   #  ensure that that e1 occurs before e2.
-  #  page.body is the entire content of the page as a string.
-  fail "Unimplemented"
+  #  page.body is the entire content of the page as a string.page
+  ind1=page.body.index(e1)
+  ind2=page.body.index(e2)
+  expect(ind1).to be < ind2
 end
 
 # Make it easier to express checking or unchecking several boxes at once
@@ -25,10 +27,23 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
   # HINT: use String#split to split up the rating_list, then
   #   iterate over the ratings and reuse the "When I check..." or
   #   "When I uncheck..." steps in lines 89-95 of web_steps.rb
-  fail "Unimplemented"
+  rate_list = rating_list.split(',')
+  rate_list.each do |x|
+    x=x.strip
+    if uncheck
+      page.uncheck('ratings_'+x)
+    else
+      page.check('ratings_'+x)
+    end
+  end
 end
 
 Then /I should see all the movies/ do
   # Make sure that all the movies in the app are visible in the table
-  fail "Unimplemented"
+  #page.body returns string of entire html
+  #puts page.body
+  rows=page.body.scan(/More about/).length
+  total_movies=Movie.count
+  expect(rows).to eq(total_movies)
+ # fail "Unimplemented"
 end
